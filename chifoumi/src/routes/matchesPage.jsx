@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 
 const MatchesPage = () => {
   const [playedGames, setPlayedGames] = useState([]);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     fetchPlayedGames();
@@ -9,10 +10,16 @@ const MatchesPage = () => {
 
   const fetchPlayedGames = async () => {
     try {
-      const response = await fetch('http://localhost:3002/matches');
+      const response = await fetch('http://localhost:3002/matches', {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Inclure le token JWT dans l'en-tête
+        },
+      });
+
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
       }
+
       const data = await response.json();
       setPlayedGames(data);
     } catch (error) {
@@ -22,9 +29,13 @@ const MatchesPage = () => {
 
   const handleNewGame = async () => {
     try {
-      const response = await fetch('http://localhost:3000/matches', {
+      const response = await fetch('http://localhost:3002/matches', {
         method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`, // Inclure le token JWT dans l'en-tête
+        },
       });
+
       if (response.ok) {
         // Nouvelle partie créée avec succès
         // Mettez à jour les parties jouées en appelant fetchPlayedGames à nouveau

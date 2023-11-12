@@ -1,6 +1,6 @@
 // LoginPage.jsx
-import  { useState } from 'react';
-import { useNavigate,Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -17,11 +17,26 @@ const LoginPage = () => {
         },
         body: JSON.stringify({ username, password }),
       });
-      const data = await response.json();
-      // Stockez le token dans le localStorage ou les cookies pour les sessions
-      localStorage.setItem('token', data.token);
-      // Redirigez l'utilisateur vers la page suivante après la connexion réussie
-      navigate('/matches'); // Changez '/dashboard' par la route appropriée
+
+      if (!response.ok) {
+        console.error(`Login failed with status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Server error message:', errorText);
+        return;
+      }
+
+      const responseData = await response.text();
+      console.log('Raw Server Response:', responseData);
+
+      try {
+        const data = JSON.parse(responseData);
+        // Stockez le token dans le localStorage ou les cookies pour les sessions
+        localStorage.setItem('token', data.token);
+        // Redirigez l'utilisateur vers la page suivante après la connexion réussie
+        navigate('/matches'); // Changez '/dashboard' par la route appropriée
+      } catch (parseError) {
+        console.error('Error parsing server response:', parseError);
+      }
     } catch (error) {
       console.error('Error during login:', error);
       // Gérez les erreurs de connexion ici
@@ -47,7 +62,7 @@ const LoginPage = () => {
         <button type="submit">Se connecter</button>
       </form>
       <div>
-      <p>Pas encore inscrit ? <Link to="/register">inscrire</Link></p>
+        <p>Pas encore inscrit ? <Link to="/register">inscrire</Link></p>
       </div>
     </div>
   );

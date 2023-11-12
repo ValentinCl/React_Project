@@ -20,11 +20,10 @@
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "dotenv-flow": "^4.0.0",
     "express": "^4.17.1",
-    "firebase": "^10.5.2",
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
-    "firebase-tools": "^12.8.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.13",
     "uuid": "^8.3.2"

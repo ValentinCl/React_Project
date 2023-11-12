@@ -19,10 +19,10 @@ const RegisterPage = () => {
       });
       const data = await response.json();
       // Gérer la réponse du serveur
-      const { id, token, password} = data;
+      const { id, token, serverPassword} = data;
       console.log('ID utilisateur:', id);
       console.log('Token JWT:', token);
-      console.log('Password:', password);
+      console.log('Password:', serverPassword);
       // Rediriger l'utilisateur vers la page de connexion après l'inscription réussie
       navigate('/login'); // Changez '/login' par la route appropriée
     } catch (error) {
