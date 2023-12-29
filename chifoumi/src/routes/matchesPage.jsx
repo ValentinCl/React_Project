@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Button, Container, List, ListItem, TextField, Typography } from '@mui/material';
 
 const MatchesPage = () => {
   const [playedGames, setPlayedGames] = useState([]);
   const token = localStorage.getItem('token');
-
+  const [joinGameId, setJoinGameId] = useState('');
   useEffect(() => {
     fetchPlayedGames();
   }, []);
@@ -49,21 +50,78 @@ const MatchesPage = () => {
     }
   };
 
+  const handleJoinGame = async (gameId) => {
+    try {
+      const response = await fetch(`http://localhost:3002/matches/${gameId}/join`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        // Rejoindre la partie avec succès
+        fetchPlayedGames(); // Mettez à jour la liste des parties jouées
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to join game:', errorData);
+      }
+    } catch (error) {
+      console.error('Error joining game:', error);
+    }
+  };
+
+  const handlePlayGame = (gameId) => {
+    // Vérifier si la partie a déjà deux joueurs
+    const match = playedGames.find((match) => match._id === gameId);
+
+    if (match && match.user2) {
+      // La partie a deux joueurs, rediriger l'utilisateur vers la page de jeu
+      window.location.href = `/matches/${gameId}`;
+    } else {
+      // La partie n'a pas deux joueurs, informer l'utilisateur
+      console.log(`Waiting for the second player to join the game ${gameId}`);
+    }
+  };
+
   return (
-    <div>
-      <h2>Dashboard</h2>
-      <button onClick={handleNewGame}>New Game</button>
-      <h3>Matches:</h3>
+<Container maxWidth="sm">
+      <Typography variant="h2">Dashboard</Typography>
+      <Button variant="contained" color="primary" onClick={handleNewGame}>
+        New Game
+      </Button>
+      <Typography variant="h3">Matches:</Typography>
       {playedGames.length > 0 ? (
-        <ul>
+        <List>
           {playedGames.map((match) => (
-            <li key={match._id}>{`Match ${match._id}: ${match.user1.username} vs ${match.user2 ? match.user2.username : 'Waiting for opponent'}`}</li>
+            <ListItem key={match._id}>
+              {`Match ${match._id}: ${match.user1.username} vs ${
+                match.user2 ? match.user2.username : 'Waiting for opponent'
+              } `}
+
+              {match.user2 && (
+                <Button variant="contained" color="primary" onClick={() => handlePlayGame(match._id)}>
+                  Play
+                </Button>
+              )}
+              <form onSubmit={() => handleJoinGame(match._id)}>
+                <TextField
+                  type="text"
+                  placeholder="Enter Game ID"
+                  value={joinGameId}
+                  onChange={(e) => setJoinGameId(e.target.value)}
+                />
+                <Button type="submit" variant="contained" color="primary">
+                  Join
+                </Button>
+              </form>
+            </ListItem>
           ))}
-        </ul>
+        </List>
       ) : (
-        <p>No matches played yet.</p>
+        <Typography>No matches played yet.</Typography>
       )}
-    </div>
+    </Container>
   );
 };
 

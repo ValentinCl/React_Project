@@ -1,6 +1,8 @@
+/* eslint-disable react/no-unescaped-entities */
 // RegisterPage.jsx
 import  { useState } from 'react';
 import { useNavigate,Link } from 'react-router-dom';
+import { Container, TextField, Button } from '@mui/material';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -32,28 +34,38 @@ const RegisterPage = () => {
   };
 
   return (
-    <div>
-      <h2>inscrire</h2>
-      <form onSubmit={handleRegister}>
-        <input
-          type="text"
-          placeholder="Nom d'utilisateur"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">inscrire</button>
-      </form>
+    <Container component="main" maxWidth="xs">
       <div>
-      <p>Déjà inscrit ? <Link to="/login">Se connecter</Link></p>
+        <h2>S'inscrire</h2>
+        <form onSubmit={handleRegister}>
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            label="Nom d'utilisateur"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            label="Mot de passe"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Inscription
+          </Button>
+        </form>
+        <div>
+          <p>Déjà inscrit ? <Link to="/login">Se connecter</Link></p>
+        </div>
       </div>
-    </div>
+    </Container>
   );
 };
+
 
 export default RegisterPage;

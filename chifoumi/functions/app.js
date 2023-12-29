@@ -1,3 +1,10 @@
+/* eslint-disable curly */
+/* eslint-disable comma-dangle */
+/* eslint-disable indent */
+/* eslint-disable prefer-const */
+/* eslint-disable object-curly-spacing */
+/* eslint-disable space-before-function-paren */
+/* eslint-disable quote-props */
 require("dotenv-flow").config();
 const express = require("express");
 const app = express();
@@ -62,6 +69,7 @@ app.post("/matches", verifyJwt(), async function (req, res) {
     }
 
     let match = await Match.findOne({
+      // eslint-disable-next-line object-curly-spacing
       "user1._id": { $ne: req.user._id },
       user2: null,
     });
@@ -222,5 +230,46 @@ app.get("/matches/:id/subscribe", verifyJwt(), function (request, response) {
     response.status(500).json(error);
   }
 });
+
+// Rejoindre une partie
+
+app.post("/matches/:id/join", verifyJwt(), async function (req, res) {
+  try {
+    const matchId = req.params.id;
+
+    // Vérifiez si l'utilisateur a déjà un match en attente
+    const existingMatch = await Match.findOne({
+      "user1._id": req.user._id,
+      user2: null,
+    });
+
+    if (existingMatch) {
+      return res.status(400).json({ match: "You already have a match" });
+    }
+
+    // Recherchez la partie spécifiée par l'ID
+    let match = await Match.findOne({
+      _id: matchId,
+      user2: null,
+    });
+
+
+    if (!match) {
+      return res.status(404).json({ match: "Match not found or already full" });
+    }
+
+    // Ajoutez l'utilisateur en tant que joueur 2
+    match.user2 = req.user;
+
+    // Sauvegardez la partie mise à jour
+    match = await match.save();
+
+    // Réponse avec les détails de la partie
+    res.status(201).json(match);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+
 
 module.exports = app;
