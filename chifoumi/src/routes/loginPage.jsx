@@ -11,7 +11,7 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3002/login', {
+      const response = await fetch('http://fauques.freeboxos.fr:3000/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const LoginPage = () => {
       }
 
       const responseData = await response.text();
-      console.log('Raw Server Response:', responseData);
+      
 
       try {
         const data = JSON.parse(responseData);

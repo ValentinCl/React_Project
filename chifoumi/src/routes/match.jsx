@@ -14,7 +14,7 @@ function Match() {
 
     const fetchMatch = async () => {
         try {
-          const response = await fetch(`http://localhost:3002/matches/${id}`, {
+          const response = await fetch(`http://fauques.freeboxos.fr:3000/matches/${id}`, {
             headers: {
               'Authorization': `Bearer ${token}`,
             },
@@ -45,47 +45,65 @@ function Match() {
       }, [id, token]);
     
       const makeMove = async (move) => {
-
         try {
-          var turnId = match.turns.length;
-          if (match.turns[turnId-1]  && (!match.turns[turnId-1].user1|| !match.turns[turnId-1].user2)) {
-            
+          var idTurn = match.turns.length;
+      
+          if (match.turns[idTurn - 1] && (!match.turns[idTurn - 1].user1 || !match.turns[idTurn - 1].user2)) {
             // Gérer le cas où les deux joueurs n'ont pas encore fait un mouvement dans le tour actuel
-            turnId = match.turns.length;
-            const reponse = await fetch(`http://localhost:3002/matches/${id}/turns/${turnId}`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ move }),
-          });
-
-            if (!reponse.ok) {
-              throw new Error(`Failed to make move: ${reponse.status} ${reponse.statusText}`);
+            idTurn = match.turns.length;
+            const response = await fetch(`http://fauques.freeboxos.fr:3000/matches/${id}/turns/${idTurn}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ move }),
+            });
+      
+            if (!response.ok) {
+              throw new Error(`Failed to make move: ${response.status} ${response.statusText}`);
             }
+      
             fetchMatch();
-        } else{
-
-        
-          turnId = match.turns.length+1;
-          const response = await fetch(`http://localhost:3002/matches/${id}/turns/${turnId}`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ move }),
-          });
-    
-          if (!response.ok) {
-            throw new Error(`Failed to make move: ${response.status} ${response.statusText}`);
           }
-    
-          // Move submitted
-          fetchMatch();
+          else if(idTurn === 0 ){
+            idTurn = 1;
+            const response = await fetch(`http://fauques.freeboxos.fr:3000/matches/${id}/turns/${idTurn}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ move }),
+            });
+            console.log('match.turns.length:', match.turns.length);
+            console.log('idTurn:', idTurn);
+
+            if (!response.ok) {
+              throw new Error(`Failed to make move: ${response.status} ${response.statusText}`);
+            }
+      //Afficher
+            fetchMatch();
+          }   
           
-        } }catch (error) {
+          else {
+            idTurn = match.turns.length + 1;
+            const response = await fetch(`http://fauques.freeboxos.fr:3000/matches/${id}/turns/${idTurn}`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ move }),
+            });
+      
+            if (!response.ok) {
+              throw new Error(`Failed to make move: ${response.status} ${response.statusText}`);
+            }
+      
+            fetchMatch();
+          }
+        } catch (error) {
           console.error('Error making move:', error);
           // Gérer l'erreur, par exemple, afficher un message à l'utilisateur
         }

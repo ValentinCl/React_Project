@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Button, Container, List, ListItem, TextField, Typography } from '@mui/material';
+import { Button, Container, List, ListItem, Typography } from '@mui/material';
 
 const MatchesPage = () => {
   const [playedGames, setPlayedGames] = useState([]);
   const token = localStorage.getItem('token');
-  const [joinGameId, setJoinGameId] = useState('');
+ 
   useEffect(() => {
     fetchPlayedGames();
   }, []);
 
   const fetchPlayedGames = async () => {
     try {
-      const response = await fetch('http://localhost:3002/matches', {
+      const response = await fetch('http://fauques.freeboxos.fr:3000/matches', {
         headers: {
           'Authorization': `Bearer ${token}`, // Inclure le token JWT dans l'en-tête
         },
@@ -30,7 +30,7 @@ const MatchesPage = () => {
 
   const handleNewGame = async () => {
     try {
-      const response = await fetch('http://localhost:3002/matches', {
+      const response = await fetch('http://fauques.freeboxos.fr:3000/matches', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`, // Inclure le token JWT dans l'en-tête
@@ -50,9 +50,9 @@ const MatchesPage = () => {
     }
   };
 
-  const handleJoinGame = async (gameId) => {
+  const handleJoinGame = async () => {
     try {
-      const response = await fetch(`http://localhost:3002/matches/${gameId}/join`, {
+      const response = await fetch(`http://fauques.freeboxos.fr:3000/matches/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -104,17 +104,11 @@ const MatchesPage = () => {
                   Play
                 </Button>
               )}
-              <form onSubmit={() => handleJoinGame(match._id)}>
-                <TextField
-                  type="text"
-                  placeholder="Enter Game ID"
-                  value={joinGameId}
-                  onChange={(e) => setJoinGameId(e.target.value)}
-                />
-                <Button type="submit" variant="contained" color="primary">
+              {!match.user2 && (
+                <Button variant="contained" color="secondary" onClick={() => handleJoinGame(match._id)}>
                   Join
                 </Button>
-              </form>
+              )}
             </ListItem>
           ))}
         </List>
