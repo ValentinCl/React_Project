@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Button, Container, List, ListItem, Typography } from '@mui/material';
 
 const MatchesPage = () => {
@@ -50,39 +51,6 @@ const MatchesPage = () => {
     }
   };
 
-  const handleJoinGame = async () => {
-    try {
-      const response = await fetch(`http://fauques.freeboxos.fr:3000/matches/`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        // Rejoindre la partie avec succès
-        fetchPlayedGames(); // Mettez à jour la liste des parties jouées
-      } else {
-        const errorData = await response.json();
-        console.error('Failed to join game:', errorData);
-      }
-    } catch (error) {
-      console.error('Error joining game:', error);
-    }
-  };
-
-  const handlePlayGame = (gameId) => {
-    // Vérifier si la partie a déjà deux joueurs
-    const match = playedGames.find((match) => match._id === gameId);
-
-    if (match && match.user2) {
-      // La partie a deux joueurs, rediriger l'utilisateur vers la page de jeu
-      window.location.href = `/matches/${gameId}`;
-    } else {
-      // La partie n'a pas deux joueurs, informer l'utilisateur
-      console.log(`Waiting for the second player to join the game ${gameId}`);
-    }
-  };
 
   return (
 <Container maxWidth="sm">
@@ -95,20 +63,11 @@ const MatchesPage = () => {
         <List>
           {playedGames.map((match) => (
             <ListItem key={match._id}>
-              {`Match ${match._id}: ${match.user1.username} vs ${
-                match.user2 ? match.user2.username : 'Waiting for opponent'
-              } `}
-
-              {match.user2 && (
-                <Button variant="contained" color="primary" onClick={() => handlePlayGame(match._id)}>
-                  Play
-                </Button>
-              )}
-              {!match.user2 && (
-                <Button variant="contained" color="secondary" onClick={() => handleJoinGame(match._id)}>
-                  Join
-                </Button>
-              )}
+              <Link to={`/matches/${match._id}`}>
+                {`Match ${match._id}: ${match.user1.username} vs ${
+                  match.user2 ? match.user2.username : 'Waiting for opponent'
+                } `}
+              </Link>
             </ListItem>
           ))}
         </List>

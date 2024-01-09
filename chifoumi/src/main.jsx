@@ -4,7 +4,9 @@ import LoginPage from './routes/loginPage';
 import RegisterPage from './routes/registerPage';
 import MatchesPage from './routes/matchesPage';
 import Match from './routes/match';
+import MatchDetailsPage from './routes/matchDetailPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
 //import './index.css';
 
 const router = createBrowserRouter([
@@ -22,6 +24,10 @@ const router = createBrowserRouter([
   },
   {
     path: '/matches/:id', // Renommez la route pour la page de jeu avec un paramètre d'ID
+    element: <MatchDetailsPage />,
+  },
+  {
+    path: '/matches/:id/play', // Renommez la route pour la page de jeu avec un paramètre d'ID
     element: <Match />,
   },
 ]);
