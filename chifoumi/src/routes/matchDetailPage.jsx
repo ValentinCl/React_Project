@@ -1,21 +1,22 @@
-// MatchDetailsPage.jsx
 import { useParams } from 'react-router-dom';
-import { useState, useEffect} from 'react';
-import{
-    Container,
-    Typography,
-    List,
-    ListItem,
-    Button,
-   }  from '@mui/material';
-  
+import { useState, useEffect } from 'react';
+import {
+  Container,
+  Typography,
+  List,
+  ListItem,
+  Button,
+  Box,
+  Grid,
+} from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {  faPlay } from '@fortawesome/free-solid-svg-icons';
+
 const MatchDetailsPage = () => {
-  
   const { id } = useParams();
   const [matchDetails, setMatchDetails] = useState(null);
   const token = localStorage.getItem('token');
 
-  // Effectuer une requête au serveur pour obtenir les détails de la partie correspondante
   useEffect(() => {
     // Effectuer une requête au serveur pour obtenir les détails de la partie correspondante
     const fetchMatchDetails = async () => {
@@ -40,44 +41,66 @@ const MatchDetailsPage = () => {
     fetchMatchDetails();
   }, [id, token]);
 
-  const handlePlayGame = (gameId) => {
-   gameId=matchDetails._id;
+  const handlePlayGame = () => {
     if (matchDetails && matchDetails.user2) {
       // La partie a deux joueurs, rediriger l'utilisateur vers la page de jeu
-      window.location.href = `/matches/${gameId}/play`;
+      window.location.href = `/matches/${id}/play`;
     } else {
       // La partie n'a pas deux joueurs, informer l'utilisateur
-      console.log(`Waiting for the second player to join the game ${gameId}`);
+      console.log(`Waiting for the second player to join the game ${id}`);
     }
   };
 
+  const goBackToMatches = () => {
+    window.location.href = '/matches'
+};
+
   return (
     <Container maxWidth="sm" style={{ marginTop: '16px' }}>
-    <Typography variant="h2">Match Details</Typography>
-    {matchDetails ? (
-      <div>
-        <Typography variant="h4">{`Match ${matchDetails._id}`}</Typography>
-        <Typography variant="body1">
-          {`Player 1: ${matchDetails.user1.username} | Player 2: ${matchDetails.user2 ? matchDetails.user2.username : 'Waiting for opponent'}`}
-        </Typography>
-        <Typography variant="h5">Game Details:</Typography>
-        <List>
-        {matchDetails.turns.map((turn, index) => (
-    <ListItem key={index}>
-      {`Turn ${index + 1}: Winner - ${turn.winner || 'Not decided yet'}`}
-    </ListItem>
-  ))}
-        </List>
-        <Button variant="contained" color="primary" onClick={handlePlayGame}>
-          Jouer
-        </Button>
-      </div>
-    ) : (
-      <Typography>Loading match details...</Typography>
-    )}
-  </Container>
-);
-  
+      <Typography variant="h2">Match Details</Typography>
+      {matchDetails ? (
+        <Box>
+          <Typography variant="h4">{`Match ${matchDetails._id}`}</Typography>
+          <Typography variant="body1">
+            {`Player 1: ${matchDetails.user1.username} | Player 2: ${matchDetails.user2 ? matchDetails.user2.username : 'Waiting for opponent'}`}
+          </Typography>
+          <Typography variant="h5">Game Details:</Typography>
+          <List>
+            {matchDetails.turns.map((turn, index) => (
+              <ListItem key={index}>
+                {`Turn ${index + 1}: Winner - ${turn.winner || 'Not decided yet'}`}
+              </ListItem>
+            ))}
+          </List>
+          <Box mt={4}>
+            <Grid container spacing={2} justifyContent="center">
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<FontAwesomeIcon icon={faPlay} />}
+                  onClick={handlePlayGame}
+                >
+                  Jouer
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={goBackToMatches}
+                >
+                  Back to Matches
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      ) : (
+        <Typography>Loading match details...</Typography>
+      )}
+    </Container>
+  );
 };
 
 export default MatchDetailsPage;

@@ -4,12 +4,17 @@ import LoginPage from './routes/loginPage';
 import RegisterPage from './routes/registerPage';
 import MatchesPage from './routes/matchesPage';
 import Match from './routes/match';
+import App from './App';
 import MatchDetailsPage from './routes/matchDetailPage';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 //import './index.css';
 
 const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App/>,
+  },
   {
     path: '/login',
     element: <LoginPage/>,
@@ -20,14 +25,14 @@ const router = createBrowserRouter([
   },
   {
     path: '/matches',
-    element: <MatchesPage />, // Ajoutez la route vers votre DashboardPage
+    element: <MatchesPage />, 
   },
   {
-    path: '/matches/:id', // Renommez la route pour la page de jeu avec un paramètre d'ID
+    path: '/matches/:id', 
     element: <MatchDetailsPage />,
   },
   {
-    path: '/matches/:id/play', // Renommez la route pour la page de jeu avec un paramètre d'ID
+    path: '/matches/:id/play', 
     element: <Match />,
   },
 ]);

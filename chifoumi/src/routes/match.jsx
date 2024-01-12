@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-
+import { Container, Typography, Button,Box,Grid,Snackbar} from '@mui/material';
 import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHandRock, faHandPaper, faHandScissors } from '@fortawesome/free-solid-svg-icons';
+
 
 function Match() {
     const { id } = useParams();
 
     const [match, setMatch] = useState(null);
+    const [message, setMessage] = useState('');
     
     const token = localStorage.getItem('token');
     // eslint-disable-next-line no-unused-vars
@@ -113,27 +117,101 @@ function Match() {
     };
 
     return (
-        <div>
-            {/* Afficher les détails du match */}
-            {match && (
-                <div>
-                    <p>Match ID: {match._id}</p>
-                    <p>Players: {match.user1.username} vs {match.user2 ? match.user2.username : 'Waiting for opponent'}</p>
-                    <p>Turns: {match.turns.length >0? match.turns.length: match.turns.length+1}</p>
-                </div>
-            )}
+      <Box p={4}>
+      {match && (
+        <Container maxWidth="sm" style={{ marginTop: '16px' }}>
+          <Typography variant="h4" align="center" mb={2}>
+            Match {match._id}
+          </Typography>
 
-            {/* Ajouter des boutons pour les différents mouvements */}
-            <button onClick={() => makeMove('rock')}>Rock</button>
-            <button onClick={() => makeMove('paper')}>Paper</button>
-            <button onClick={() => makeMove('scissors')}>Scissors</button>
-            <button onClick={goBackToMatches}>Back to Matches</button>
-        
-        </div>
-    );
+          <Typography variant="body1" align="center" mb={2}>
+            {`Players: ${match.user1.username} vs ${match.user2 ? match.user2.username : 'Waiting for opponent'}`}
+          </Typography>
+
+          <Typography variant="h5" align="center" mb={2}>
+            Turns: {match.turns.length > 0 ? match.turns.length : match.turns.length + 1}
+          </Typography>
+
+          <Grid container spacing={2} justifyContent="center">
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faHandRock} />}
+                onClick={async () => {
+                  try {
+                    await makeMove('rock');
+                    setMessage('Vous avez joué : Rock');
+                  } catch (error) {
+                    setMessage("Erreur : le mouvement n'a pas été soumis");
+                  } finally {
+                    setTimeout(() => setMessage(''), 3000);
+                  }
+                }}
+              >
+                Pierre
+              </Button>
+            </Grid>
+
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faHandPaper} />}
+                onClick={async () => {
+                  try {
+                    await makeMove('paper');
+                    setMessage('Vous avez joué : Paper');
+                  } catch (error) {
+                    setMessage("Erreur : le mouvement n'a pas été soumis");
+                  } finally {
+                    setTimeout(() => setMessage(''), 3000);
+                  }
+                }}
+              >
+                Papier
+              </Button>
+            </Grid>
+
+            <Grid item>
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<FontAwesomeIcon icon={faHandScissors} />}
+                onClick={async () => {
+                  try {
+                    await makeMove('scissors');
+                    setMessage('Vous avez joué : Scissors');
+                  } catch (error) {
+                    setMessage("Erreur : le mouvement n'a pas été soumis");
+                  } finally {
+                    setTimeout(() => setMessage(''), 3000);
+                  }
+                }}
+              >
+                Ciseaux
+              </Button>
+            </Grid>
+          </Grid>
+
+          <Snackbar
+            open={!!message}
+            message={message}
+            autoHideDuration={3000}
+            onClose={() => setMessage('')}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          />
+          
+          <Box mt={4} textAlign="center">
+            <Button variant="contained" color="secondary" onClick={goBackToMatches}>
+              Back to Matches
+            </Button>
+          </Box>
+        </Container>
+      )}
+    </Box>
+  );
 }
-
-
 
 Match.propTypes = {
     matchId: PropTypes.string.isRequired
